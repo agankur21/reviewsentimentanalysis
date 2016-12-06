@@ -32,7 +32,9 @@ class SentenceAspectExtractor():
     # Grammar for NP chunking
     GRAMMAR = r"""
     NBAR:
-        {<DET>?<NN.*|JJ|VBN>*<NN.*>*}  # Nouns and Adjectives, terminated with Nouns
+        {<NN.*><VBZ|VBD><DET|RB>?<JJ.*>} # A clause with Noun followed by adjective
+        {<DET>?<NN.*|JJ|VBN>*<NN.*>+}  # Nouns and Adjectives, terminated with Nouns
+
 
     NP:
         {<NBAR><IN|CC><NBAR>}  # Above, connected with in/of/etc...
@@ -78,7 +80,7 @@ class SentenceAspectExtractor():
         Generator of NP (nounphrase) leaf nodes of a chunk tree.
         """
         for subtree in tree.subtrees(filter=lambda t: t.label() == 'NP'):
-            leaves = filter(lambda t: t[1] == 'NN' or t[1] == 'NNP' or t[1] == 'NNS', subtree.leaves())
+            leaves = filter(lambda t: t[1] == 'NN' or t[1] == 'NNS', subtree.leaves())
             yield leaves
 
     def valid_aspect(self, aspect):

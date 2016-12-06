@@ -132,12 +132,14 @@ def write_aspect_file(business_aspect_dict, business_filtered_aspects_dict):
                 aspect_count = 0
             filtered_aspects = filter_aspects(aspects_list[aspect_count],business_filtered_aspects_dict[business_id])
             filtered_aspects_str = ",".join(filtered_aspects).encode("utf-8")
-            output_line = "\t".join([business_id, review_id, review_sentence, sentiment_score, sentiment_type,filtered_aspects_str])
-            aspect_file.write(output_line + "\n")
+            output_line = "\t".join([business_id, review_id, review_sentence, filtered_aspects_str,sentiment_score, sentiment_type])
+            aspect_file.write(output_line)
             aspect_file.flush()
             aspect_count += 1
             prev_business_id =  business_id
     aspect_file.close()
+
+
 
 
 if __name__ == '__main__':

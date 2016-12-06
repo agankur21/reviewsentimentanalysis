@@ -26,7 +26,7 @@ class POS_Tagger:
                 token_tags.append((tok.text, tok.tag_))
             clean_token_tags = []
             for tt in token_tags:
-                if tt[1] == u"SPACE" or tt[1] == u"," :
+                if tt[1] == u"SPACE" or tt[1] == u"," or tt[1]== u"SP" :
                     continue
                 clean_token_tags.append((tt[0], tt[1]))
             tagged_sents.append(clean_token_tags)
@@ -57,16 +57,16 @@ def pos_tag_sentence(sentence,tokenizer,neg_suffix_appender=None):
 
 
 if __name__ == '__main__':
-    input_text = "Mr Hoagie is an institution. Walking in, it does not seem like a throwback to 30 years ago, old fashioned menu board, booths out of the 70s, and a large selection of food. Their speciality is the Italian Hoagie, and it is voted the best in the area year after year. I usually order the burger, while the patties are obviously cooked from frozen, all of the other ingredients are very fresh. Overall, its a good alternative to Subway, which is down the road.It had great fish tacos"
+    input_text = "Jojo 's is the epitome of a greasy spoon diner ."
     aspect_extractor = aspect_extraction.SentenceAspectExtractor()
     tokenizer  = tknr.CustomizedTokenizer(preserve_case=True)
     neg_suffix_appender = tknr.NegationSuffixAdder()
-    sentences = nltk.sent_tokenize(input_text)
-    print (sentences)
-    for sentence in sentences:
-        pos_tags = pos_tag_sentence(sentence,tokenizer,None)
-        print(pos_tags)
-        print (aspect_extractor.get_sent_aspects(pos_tags))
+    # sentences = nltk.sent_tokenize(input_text)
+    # print (sentences)
+    # for sentence in sentences:
+    #     pos_tags = pos_tag_sentence(sentence,tokenizer,None)
+    #     print(pos_tags)
+    #     print (aspect_extractor.get_sent_aspects(pos_tags))
     pos_tagger= POS_Tagger()
     pos_tags_list = pos_tagger.get_pos_tags(input_text)
     for pos_tags in pos_tags_list:

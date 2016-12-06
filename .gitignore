@@ -4,3 +4,7 @@
 .ipynb
 */.ipynb_checkpoints
 .csv
+*.json
+*.txt
+*.gitignore
+*.idea
