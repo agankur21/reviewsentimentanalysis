@@ -41,12 +41,11 @@ class SentenceAspectExtractor():
 
     CHUNKER = nltk.RegexpParser(GRAMMAR)
 
-    _my_stopword_additions = ["it's", "i'm", "star", "", "time", "night", "try", "sure", "times", "way", "friends"]
-    STOPWORDS = set(stopwords.words('english') + _my_stopword_additions)
+    stopword_additions = ["it's", "i'm", "star", "", "time", "night", "try", "sure", "times", "way", "friends","%","-LRB-","-RRB-"]
+    STOPWORDS = set(stopwords.words('english') + stopword_additions)
 
     PUNCT_RE = re.compile("^[\".:;!?')(/]$")
 
-    # FORBIDDEN = {'great', 'good', 'time', 'friend', 'way', 'friends'}
     FORBIDDEN = {}
 
     def __init__(self):
@@ -63,8 +62,9 @@ class SentenceAspectExtractor():
         # filter invalid aspects
         flat_list_aspects=[]
         for asp in aspects:
-            if self.valid_aspect(asp):
-                flat_list_aspects = flat_list_aspects + asp
+            valid_aspects= self.valid_aspect(asp)
+            if len(valid_aspects) > 0:
+                flat_list_aspects = flat_list_aspects + valid_aspects
         return flat_list_aspects
 
     def get_NPs(self, tree):
@@ -84,14 +84,7 @@ class SentenceAspectExtractor():
     def valid_aspect(self, aspect):
         """
         INPUT: list of strings
-        OUTPUT: boolean
+        OUTPUT: filtered strings
         """
-
         no_stops = [w for w in aspect if w not in SentenceAspectExtractor.STOPWORDS and not self.PUNCT_RE.match(w)]
-
-        if len(no_stops) < 1:  #
-            return False
-        elif any([forbid_wrd in aspect for forbid_wrd in SentenceAspectExtractor.FORBIDDEN]):
-            return False
-        else:
-            return True
+        return  no_stops

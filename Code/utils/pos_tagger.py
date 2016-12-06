@@ -11,7 +11,7 @@ class POS_Tagger:
     def __init__(self):
         self.nlp = English()
 
-    def get_pos_tags(self, content):
+    def get_pos_tags(self,content):
         doc = self.nlp(content.decode("utf-8"))
         sents = []
         for sent in doc.sents:
@@ -20,7 +20,6 @@ class POS_Tagger:
         tagged_sents = []
         for sent in sents:
             i += 1
-            print("Processing sentence# %d: %s" % (i, sent))
             token_tags = []
             toks = self.nlp(sent.text.encode("ascii", "ignore").decode("utf-8"))
             for tok in toks:
@@ -63,7 +62,14 @@ if __name__ == '__main__':
     tokenizer  = tknr.CustomizedTokenizer(preserve_case=True)
     neg_suffix_appender = tknr.NegationSuffixAdder()
     sentences = nltk.sent_tokenize(input_text)
+    print (sentences)
     for sentence in sentences:
         pos_tags = pos_tag_sentence(sentence,tokenizer,None)
+        print(pos_tags)
         print (aspect_extractor.get_sent_aspects(pos_tags))
+    pos_tagger= POS_Tagger()
+    pos_tags_list = pos_tagger.get_pos_tags(input_text)
+    for pos_tags in pos_tags_list:
+        print (pos_tags)
+        print(aspect_extractor.get_sent_aspects(pos_tags))
 
