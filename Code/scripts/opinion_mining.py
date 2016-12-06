@@ -1,14 +1,14 @@
-import sys
 import os
-sys.path.append(os.path.join(os.getcwd(),"utils"))
-import pandas as pd
+import sys
+
+sys.path.append(os.path.join(os.getcwd(), "../utils"))
 import numpy as np
 import aspect_extraction as ae
 import pos_tagger as pt
 import scoring
-from spacy.en import English
 
 pos_tagger = pt.POS_Tagger()
+
 
 def get_reviews_for_business(bus_id, df):
     """
@@ -31,7 +31,7 @@ def extract_aspects(reviews):
     aspect_extractor = ae.SentenceAspectExtractor()
     tagged_tokenized_sentences = pos_tagger.get_pos_tags(reviews)
     # from the pos tagged sentences, get a list of aspects
-    aspects=set([])
+    aspects = set([])
     for tagged_tokenized_sentence in tagged_tokenized_sentences:
         aspects.union(set(aspect_extractor.get_sent_aspects(tagged_tokenized_sentence)))
     return aspects
@@ -48,6 +48,7 @@ def get_sentences_by_aspect(aspect, reviews):
     doc = pos_tagger.nlp(reviews.decode("utf-8"))
     tokenized_sentences = [sent.string.strip() for sent in doc]
     return [sent for sent in tokenized_sentences if aspect in sent]
+
 
 def score_aspect(reviews, aspect):
     """
@@ -73,4 +74,3 @@ def aspect_opinions(reviews):
 
     aspects = extract_aspects(reviews)
     return dict([(aspect, score_aspect(reviews, aspect)) for aspect in aspects])
-
