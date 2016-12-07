@@ -110,15 +110,22 @@ def aggregate_aspect_rating_sample():
     out_file.close()
 
 
+def get_aspect_category_match():
+    """
+    Get an aspect category for aspect.
+    :return:
+    """
+    in_file_path = os.path.join(os.getcwd(), "../../Data", constants.ASPECT_CATEGORY_FILENAME)
+    out_file_path = os.path.join(os.getcwd(), "../../Data", "word_net_similarity.csv")
+    aspects = map(lambda x: x.strip(), open(in_file_path, 'r').readlines())
+    categories = map(lambda x :get_wordnet_similar_category(x),aspects)
+    out_file = open(out_file_path,'w')
+    for i in range(len(aspects)):
+        out_file.write(aspects[i].strip() + "," + categories[i] + "\n")
+    out_file.close()
+
 if __name__ == '__main__':
-    # in_file_path = os.path.join(os.getcwd(), "../../Data", constants.ASPECT_CATEGORY_FILENAME)
-    # out_file_path = os.path.join(os.getcwd(), "../../Data", "word_net_similarity.csv")
-    # aspects = map(lambda x: x.strip(), open(in_file_path, 'r').readlines())
-    # categories = map(lambda x :get_wordnet_similar_category(x),aspects)
-    # out_file = open(out_file_path,'w')
-    # for i in range(len(aspects)):
-    #     out_file.write(aspects[i].strip() + "," + categories[i] + "\n")
-    # out_file.close()
+    get_aspect_category_match()
     aggregate_aspect_rating_sample()
     pass
 
