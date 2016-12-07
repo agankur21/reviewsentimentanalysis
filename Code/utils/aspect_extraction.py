@@ -43,7 +43,7 @@ class SentenceAspectExtractor():
 
     CHUNKER = nltk.RegexpParser(GRAMMAR)
 
-    stopword_additions = ["it's", "i'm", "star", "", "time", "night", "try", "sure", "times", "way", "friends","%","-LRB-","-RRB-","NOT"]
+    stopword_additions = ["it's", "i'm", "star", "", "time", "night", "try", "sure", "times", "way", "friends","%","-lrb-","-rrb-","not"]
     STOPWORDS = set(stopwords.words('english') + stopword_additions)
 
     PUNCT_RE = re.compile("^[\".:;!?')(/]$")
@@ -88,5 +88,5 @@ class SentenceAspectExtractor():
         INPUT: list of strings
         OUTPUT: filtered strings
         """
-        no_stops = [w for w in aspect if w not in SentenceAspectExtractor.STOPWORDS and not self.PUNCT_RE.match(w)]
+        no_stops = [w.lower() for w in aspect if w.lower() not in SentenceAspectExtractor.STOPWORDS and not self.PUNCT_RE.match(w)]
         return  no_stops

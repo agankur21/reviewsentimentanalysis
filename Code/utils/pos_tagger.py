@@ -57,7 +57,7 @@ def pos_tag_sentence(sentence,tokenizer,neg_suffix_appender=None):
 
 
 if __name__ == '__main__':
-    input_text = "Jojo 's is the epitome of a greasy spoon diner ."
+    input_text = "Carts are in excellent shape and provide you with electronic scoring and course GPS"
     aspect_extractor = aspect_extraction.SentenceAspectExtractor()
     tokenizer  = tknr.CustomizedTokenizer(preserve_case=True)
     neg_suffix_appender = tknr.NegationSuffixAdder()

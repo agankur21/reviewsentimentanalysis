@@ -1,11 +1,13 @@
 import os
 import sys
-sys.path.append(os.path.join(os.getcwd(),"../common"))
-sys.path.append(os.path.join(os.getcwd(),"../utils"))
+
+sys.path.append(os.path.join(os.getcwd(), "../common"))
+sys.path.append(os.path.join(os.getcwd(), "../utils"))
 import constants
 import pos_tagger
 import aspect_extraction
 from collections import Counter
+
 
 def normalize_sentiment_score(raw_score):
     """
@@ -13,12 +15,12 @@ def normalize_sentiment_score(raw_score):
     :param raw_score:
     :return:
     """
-    raw_score=int(raw_score)
-    if raw_score >=3 and raw_score <=4:
+    raw_score = int(raw_score)
+    if raw_score >= 3 and raw_score <= 4:
         return 1
-    elif raw_score ==1 :
-        return  -1
-    else :
+    elif raw_score == 1:
+        return -1
+    else:
         return 0
 
 
@@ -27,24 +29,25 @@ def parse_review_aspects_for_business(print_count=20):
     Parse the review sentiment file and return a dictionary with reviews for each business aggregated
     :return:
     """
-    complete_file_path= os.path.join(os.getcwd(),"../../Data",constants.REVIEW_SENTIMENT_FILE_NAME)
+    complete_file_path = os.path.join(os.getcwd(), "../../Data", constants.REVIEW_SENTIMENT_FILE_NAME)
     business_reviews_list = []
-    business_aspects_dict ={}
-    business_filtered_aspects_dict={}
+    business_aspects_dict = {}
+    business_filtered_aspects_dict = {}
     prev_business_id = None
-    business_id_count=0
+    business_id_count = 0
     with open(complete_file_path, 'r') as input_file:
         for line in input_file:
-            business_id,review_id,review_sentence,sentiment_score,sentiment_type = line.split("\t")
+            business_id, review_id, review_sentence, sentiment_score, sentiment_type = line.split("\t")
             review_sentence = review_sentence.strip("'")
             if business_id != prev_business_id:
                 business_id_count += 1
                 if prev_business_id is not None:
                     aspects = get_aspects_for_reviews(business_reviews_list)
-                    sorted_aspects = sorted(Counter(flatten_list_of_list(aspects)).items(), key=lambda x: x[1], reverse=True)
-                    filtered_aspects = map(lambda x: x[0],filter(lambda x :x[1]> 1,sorted_aspects))
+                    sorted_aspects = sorted(Counter(flatten_list_of_list(aspects)).items(), key=lambda x: x[1],
+                                            reverse=True)
+                    filtered_aspects = map(lambda x: x[0], filter(lambda x: x[1] > 1, sorted_aspects))
                     if business_id_count <= print_count:
-                        print "Aspect Frequency for Business ID : %s" %business_id
+                        print "Aspect Frequency for Business ID : %s" % business_id
                         print sorted_aspects
                     business_aspects_dict[prev_business_id] = aspects
                     business_filtered_aspects_dict[prev_business_id] = filtered_aspects
@@ -56,7 +59,7 @@ def parse_review_aspects_for_business(print_count=20):
     filtered_aspects = map(lambda x: x[0], filter(lambda x: x[1] > 1, sorted_aspects))
     business_aspects_dict[prev_business_id] = aspects
     business_filtered_aspects_dict[prev_business_id] = filtered_aspects
-    return business_aspects_dict,business_filtered_aspects_dict
+    return business_aspects_dict, business_filtered_aspects_dict
 
 
 def get_aspects_for_reviews(reviews):
@@ -67,11 +70,11 @@ def get_aspects_for_reviews(reviews):
     """
     pos_tagger_obj = pos_tagger.POS_Tagger()
     aspect_extractor_obj = aspect_extraction.SentenceAspectExtractor()
-    aspects= map(lambda review : get_aspects_for_review(review,pos_tagger_obj,aspect_extractor_obj),reviews)
+    aspects = map(lambda review: get_aspects_for_review(review, pos_tagger_obj, aspect_extractor_obj), reviews)
     return aspects
 
 
-def get_aspects_for_review(review,pos_tagger_obj,aspect_extractor_obj):
+def get_aspects_for_review(review, pos_tagger_obj, aspect_extractor_obj):
     """
     Return list of aspects for each review content (Sentence or Sentence Fragment)
     :param review:
@@ -80,7 +83,7 @@ def get_aspects_for_review(review,pos_tagger_obj,aspect_extractor_obj):
     :return:
     """
     list_pos_tags = pos_tagger_obj.get_pos_tags(review)
-    out_aspects=[]
+    out_aspects = []
     for pos_tags in list_pos_tags:
         aspects = aspect_extractor_obj.get_sent_aspects(pos_tags)
         out_aspects += aspects
@@ -102,46 +105,78 @@ def get_frequency_distribution(business_aspect_dict):
     :param business_aspect_dict:
     :return:
     """
-    out = {k : sorted(Counter(flatten_list_of_list(v)).items(),key=lambda x: x[1], reverse=True) for k,v in business_aspect_dict.iteritems()}
+    out = {k: sorted(Counter(flatten_list_of_list(v)).items(), key=lambda x: x[1], reverse=True) for k, v in
+           business_aspect_dict.iteritems()}
     """Printing Sample Frequency Distribution for 20 business id's"""
-    count=0
-    for business_id,freq_distrib in out.iteritems():
-        print "Aspects Count for Business Id : %s"%business_id
+    count = 0
+    for business_id, freq_distrib in out.iteritems():
+        print "Aspects Count for Business Id : %s" % business_id
         print out[business_id]
-        count +=1
+        count += 1
         if count >= 20:
             break
     return out
 
 
-def filter_aspects(aspects_list,filtered_aspects):
+def filter_aspects(aspects_list, filtered_aspects):
+    """
+    Retreiving only relevant aspects from the given list
+    :param aspects_list:
+    :param filtered_aspects:
+    :return:
+    """
     return list(set(aspects_list).intersection(filtered_aspects))
 
 
 def write_aspect_file(business_aspect_dict, business_filtered_aspects_dict):
+    """
+    Write the output aspects of each review along with oother details in an another file
+    :param business_aspect_dict:
+    :param business_filtered_aspects_dict:
+    :return:
+    """
     sentiment_file_path = os.path.join(os.getcwd(), "../../Data", constants.REVIEW_SENTIMENT_FILE_NAME)
     aspect_file_path = os.path.join(os.getcwd(), "../../Data", constants.ASPECT_FILE_NAME)
-    aspect_file=open(aspect_file_path,'w')
-    aspect_count=0
-    prev_business_id =None
+    aspect_file = open(aspect_file_path, 'w')
+    aspect_count = 0
+    prev_business_id = None
     with open(sentiment_file_path, 'r') as input_file:
         for line in input_file:
             business_id, review_id, review_sentence, sentiment_score, sentiment_type = line.split("\t")
             if business_id != prev_business_id:
                 aspects_list = business_aspect_dict[business_id]
                 aspect_count = 0
-            filtered_aspects = filter_aspects(aspects_list[aspect_count],business_filtered_aspects_dict[business_id])
+            filtered_aspects = filter_aspects(aspects_list[aspect_count], business_filtered_aspects_dict[business_id])
             filtered_aspects_str = ",".join(filtered_aspects).encode("utf-8")
-            output_line = "\t".join([business_id, review_id, review_sentence, filtered_aspects_str,sentiment_score, sentiment_type])
+            output_line = "\t".join(
+                [business_id, review_id, review_sentence, filtered_aspects_str, sentiment_score, sentiment_type])
             aspect_file.write(output_line)
             aspect_file.flush()
             aspect_count += 1
-            prev_business_id =  business_id
+            prev_business_id = business_id
     aspect_file.close()
 
 
+def generate_unique_aspects_file():
+    """
+    Fetch all apsects and write unique ones in a separate file
+    :return:
+    """
+    complete_file_path = os.path.join(os.getcwd(), "../../Data", constants.ASPECT_FILE_NAME)
+    output_file_path = os.path.join(os.getcwd(), "../../Data", constants.ASPECT_CATEGORY_FILENAME)
+    set_aspects = set([])
+    with open(complete_file_path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            aspects = line.strip().split("\t")[3].split(",")
+            set_aspects = set_aspects.union(set(aspects))
+    out_file = open(output_file_path, 'w')
+    for aspect in set_aspects:
+        out_file.write(aspect + "\n")
+    out_file.close()
 
 
 if __name__ == '__main__':
     business_aspect_dict, business_filtered_aspects_dict = parse_review_aspects_for_business()
     write_aspect_file(business_aspect_dict, business_filtered_aspects_dict)
+    generate_unique_aspects_file()
