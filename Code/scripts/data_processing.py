@@ -168,7 +168,10 @@ def generate_unique_aspects_file():
     with open(complete_file_path, 'r') as f:
         for line in f:
             line = line.strip()
-            aspects = line.strip().split("\t")[3].split(",")
+            aspects_str = line.strip().split("\t")[3]
+            if aspects_str == "" or aspects_str == " ":
+                continue
+            aspects = aspects_str.split(",")
             set_aspects = set_aspects.union(set(aspects))
     out_file = open(output_file_path, 'w')
     for aspect in set_aspects:
@@ -177,6 +180,6 @@ def generate_unique_aspects_file():
 
 
 if __name__ == '__main__':
-    business_aspect_dict, business_filtered_aspects_dict = parse_review_aspects_for_business()
-    write_aspect_file(business_aspect_dict, business_filtered_aspects_dict)
+    #business_aspect_dict, business_filtered_aspects_dict = parse_review_aspects_for_business()
+    #write_aspect_file(business_aspect_dict, business_filtered_aspects_dict)
     generate_unique_aspects_file()
