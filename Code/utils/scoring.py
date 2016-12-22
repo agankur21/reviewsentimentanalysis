@@ -137,7 +137,7 @@ def demo_score_aspect():
 
     ss = SentimentScorer()
 
-    pos_sent = "Walking in, it does  seem like a throwback to 30 years ago, old fashioned menu board, booths out of the 70s, and a large selection of food"
+    pos_sent = "This is good, awesome, perfect"
     neg_sent = "This is a bad, negative sentence"
 
     print "Score for '%s' is %f" % (pos_sent, ss.score(pos_sent))
